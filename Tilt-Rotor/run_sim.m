@@ -75,26 +75,26 @@ Q_g = [1,0,0,0;
 R_g = 0.5;
 
 
-Q_t_p = [100,0;
-         0,100];
-
-R_t_p = 0.1;
-
-
-Q_g_p = [10,0;
+Q_t_p = [10,0;
          0,10];
 
-R_g_p = 0.01;
+R_t_p = 0.0001;
+
+
+Q_g_p = [3,0;
+         0,.5];
+
+R_g_p = 3;
 
 %% LQR K Matricies
 
 % Thrust
 A_thrust = [0,1;
-       0,0];
+            0,0];
 B_thrust = [0;1];
 C_thrust = [1,0];
 
-[K_thrust,S,e] = lqr(A_thrust, B_thrust, Q_t, R_t);
+K_thrust = lqr(A_thrust, B_thrust, Q_t, R_t);
 k_r_thrust = -inv(C_thrust/(A_thrust-B_thrust*K_thrust)*B_thrust);
 
 % Position
@@ -110,7 +110,7 @@ B_position = [0,0;
 C_position = [1,0,0,0;
      0,0,1,0];
 
-[K_position,S,e] = lqr(A_position, B_position, Q_p, R_p);
+K_position = lqr(A_position, B_position, Q_p, R_p);
 k_r_position = -inv(C_position/(A_position-B_position*K_position)*B_position);
 
 % Attitude
@@ -130,7 +130,7 @@ C_attitude = [1,0,0,0,0,0;
               0,0,1,0,0,0;
               0,0,0,0,1,0];
           
-[K_attitude,S,e] = lqr(A_attitude, B_attitude, Q_a, R_a);
+K_attitude = lqr(A_attitude, B_attitude, Q_a, R_a);
 k_r_attitude = -inv(C_attitude/(A_attitude-B_attitude*K_attitude)*B_attitude);
 
 % Gamma
@@ -139,13 +139,13 @@ A_gamma = [0,1,0,0;
      0,0,0,1;
      0,0,0,0];
 B_gamma = [0,0;
-     1,0;
+     a,0;
      0,0;
-     0,1];
+     0,a];
 C_gamma = [1,0,0,0;
            0,0,1,0];
 
-[K_gamma,S,e] = lqr(A_gamma, B_gamma, Q_g, R_g);
+K_gamma = lqr(A_gamma, B_gamma, Q_g, R_g);
 k_r_gamma = -inv(C_gamma/(A_gamma-B_gamma*K_gamma)*B_gamma);
 
 % Plane
@@ -154,7 +154,7 @@ A_thrust_plane = [0,1;
 B_thrust_plane = [0;1];
 C_thrust_plane = [1,0];
 
-[K_thrust_plane,S,e] = lqr(A_thrust_plane, B_thrust_plane, Q_t_p, R_t_p);
+K_thrust_plane = lqr(A_thrust_plane, B_thrust_plane, Q_t_p, R_t_p);
 k_r_thrust_plane = -inv(C_thrust_plane/(A_thrust_plane-B_thrust_plane*K_thrust_plane)*B_thrust_plane);
 
 A_gamma_plane = [0,1;
@@ -162,9 +162,14 @@ A_gamma_plane = [0,1;
 B_gamma_plane = [0;1];
 C_gamma_plane = [1,0];
 
-[K_gamma_plane,S,e] = lqr(A_gamma_plane, B_gamma_plane, Q_g_p, R_g_p);
+K_gamma_plane = lqr(A_gamma_plane, B_gamma_plane, Q_g_p, R_g_p);
 k_r_gamma_plane = -inv(C_gamma_plane/(A_gamma_plane-B_gamma_plane*K_gamma_plane)*B_gamma_plane);
 
+
+K_test = lqr([A_gamma_plane, zeros(2,2); zeros(2,2), A_gamma_plane],...
+             [B_gamma_plane, zeros(2,1); zeros(2,1), B_gamma_plane],...
+             [Q_g_p, zeros(2,2); zeros(2,2), Q_g_p],...
+             [R_g_p]);
 %% Trajectory
 
 % [x,...;
@@ -173,7 +178,7 @@ k_r_gamma_plane = -inv(C_gamma_plane/(A_gamma_plane-B_gamma_plane*K_gamma_plane)
 %  phi,...;
 %  theta,...;
 %  psi,...];
-trajectory = [0,100;
+trajectory = [0,10;
               0,0;
               0,-3;
               0,0;
