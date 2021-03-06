@@ -119,7 +119,7 @@ R_y = 5;
 
 Q_z = [250, 0;
         0, 1];
-R_z = 0.5;
+R_z = 0.05;
 
 Q_roll = [50, 0;
            0, 1];
@@ -244,10 +244,10 @@ k_r_attitude = -inv(C_attitude/(A_attitude-B_attitude*K_attitude)*B_attitude);
 
 %% Trajectory
 
-TEST = false;
-% TEST = true;
+% TEST = false;
+TEST = true;
 
-wave = 1;
+wave = 0;
 
 if TEST
 % [x,...;
@@ -264,7 +264,7 @@ if TEST
 %                   0, 0, 0];
 %     trajectory_time = [0,2,2.9];
 
-    trajectory = [0, 25;
+    trajectory = [0, 1;
                   0, 0;
                   0, 0;
                   0, 0;
